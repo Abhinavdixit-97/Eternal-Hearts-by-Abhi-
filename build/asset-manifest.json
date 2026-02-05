@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Eternal-Hearts-by-Abhi-/static/css/main.db6bdf76.css",
+    "main.js": "/Eternal-Hearts-by-Abhi-/static/js/main.469f1732.js",
+    "index.html": "/Eternal-Hearts-by-Abhi-/index.html",
+    "main.db6bdf76.css.map": "/Eternal-Hearts-by-Abhi-/static/css/main.db6bdf76.css.map",
+    "main.469f1732.js.map": "/Eternal-Hearts-by-Abhi-/static/js/main.469f1732.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.db6bdf76.css",
+    "static/js/main.469f1732.js"
+  ]
+}

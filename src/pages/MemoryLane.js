@@ -79,28 +79,79 @@ const MemoryLane = ({ onNext }) => {
               transition={{ delay: index * 0.2, duration: 0.8 }}
             >
               <motion.div
-                className="relative w-full h-full cursor-pointer preserve-3d"
-                animate={{ rotateY: flippedCards[memory.id] ? 180 : 0 }}
-                transition={{ duration: 0.6 }}
-                onHoverStart={() => toggleFlip(memory.id)}
-                onHoverEnd={() => toggleFlip(memory.id)}
+                className="relative w-full h-full cursor-pointer"
+                onClick={() => toggleFlip(memory.id)}
+                whileTap={{ scale: 0.95 }}
               >
-                {/* Front of card */}
-                <div className="absolute inset-0 backface-hidden rounded-lg overflow-hidden shadow-2xl">
-                  <img
-                    src={memory.image}
-                    alt={`Memory ${memory.id}`}
-                    className="w-full h-full object-cover filter blur-sm hover:blur-none transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent" />
-                </div>
+                {/* Card container with mobile-friendly animation */}
+                <motion.div
+                  className="relative w-full h-full rounded-lg overflow-hidden shadow-2xl"
+                  animate={{
+                    rotateY: flippedCards[memory.id] ? 180 : 0,
+                    scale: flippedCards[memory.id] ? 0.95 : 1
+                  }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                >
+                  {/* Front of card */}
+                  <motion.div
+                    className="absolute inset-0"
+                    animate={{ opacity: flippedCards[memory.id] ? 0 : 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <img
+                      src={memory.image}
+                      alt={`Memory ${memory.id}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent" />
+                    
+                    {/* Mobile tap indicator */}
+                    <motion.div
+                      className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2"
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <span className="text-white text-lg">👆</span>
+                    </motion.div>
+                    
+                    <div className="absolute bottom-4 left-4 right-4 text-center">
+                      <p className="text-white text-sm opacity-80">Tap to reveal memory ✨</p>
+                    </div>
+                  </motion.div>
 
-                {/* Back of card */}
-                <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-rose-gold to-rose-gold-light rounded-lg p-6 flex items-center justify-center shadow-2xl">
-                  <p className="text-charcoal text-lg font-medium text-center font-signature leading-relaxed">
-                    "{memory.note}"
-                  </p>
-                </div>
+                  {/* Back of card */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-rose-gold to-rose-gold-light rounded-lg p-6 flex items-center justify-center"
+                    animate={{ opacity: flippedCards[memory.id] ? 1 : 0 }}
+                    transition={{ duration: 0.3, delay: flippedCards[memory.id] ? 0.3 : 0 }}
+                  >
+                    <div className="text-center">
+                      <motion.div
+                        className="text-4xl mb-4"
+                        animate={{ 
+                          rotate: [0, 10, -10, 0],
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        💕
+                      </motion.div>
+                      <p className="text-charcoal text-lg font-medium font-signature leading-relaxed">
+                        "{memory.note}"
+                      </p>
+                      <motion.div
+                        className="mt-4 text-charcoal/70 text-sm"
+                        animate={{ opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        Tap again to flip back ↩️
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               </motion.div>
             </motion.div>
           ))}
