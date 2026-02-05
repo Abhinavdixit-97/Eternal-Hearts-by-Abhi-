@@ -1,0 +1,61 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Great+Vibes&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #2D2D2D;
+  overflow-x: hidden;
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(232, 180, 184, 0.5);
+}
+
+.heart-glow {
+  filter: drop-shadow(0 0 10px #FFB6C1);
+}
+
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid #E8B4B8;
+  white-space: nowrap;
+  animation: typewriter 4s steps(40) 1s forwards, blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { border-color: transparent; }
+  50% { border-color: #E8B4B8; }
+}
+
+.floating-hearts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.petal-trail {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #FFB6C1, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fade-out 2s ease-out forwards;
+}
+
+@keyframes fade-out {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0); }
+}
