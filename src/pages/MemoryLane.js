@@ -203,6 +203,17 @@ const MemoryLane = ({ onNext }) => {
             </motion.div>
           ))}
         </div>
+
+        <motion.button
+          type="button"
+          onClick={advancePage}
+          className="mt-10 hidden md:inline-flex items-center justify-center rounded-full bg-rose-gold px-6 py-3 text-white text-base font-medium shadow-lg shadow-rose-gold/30 hover:bg-rose-gold-light focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          Next page
+        </motion.button>
       </div>
 
       <div className="relative flex flex-col items-center justify-start md:justify-center pt-8 md:pt-20 pb-16 text-center">
