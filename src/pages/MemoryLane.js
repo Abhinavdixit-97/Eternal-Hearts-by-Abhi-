@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const MemoryLane = ({ onNext }) => {
@@ -6,6 +6,7 @@ const MemoryLane = ({ onNext }) => {
   const [flippedCards, setFlippedCards] = useState({});
   const [isMobile, setIsMobile] = useState(false);
   const endRef = useRef(null);
+  const hasAdvancedRef = useRef(false);
 
   const memories = [
     {
@@ -51,25 +52,46 @@ const MemoryLane = ({ onNext }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const advancePage = useCallback(() => {
+    if (hasAdvancedRef.current) return;
+    hasAdvancedRef.current = true;
+    onNext();
+  }, [onNext]);
+
   useEffect(() => {
     if (!endRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          onNext();
+          advancePage();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0, rootMargin: '0px 0px -20% 0px' }
     );
 
     observer.observe(endRef.current);
     return () => observer.disconnect();
-  }, [onNext]);
+  }, [advancePage]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (hasAdvancedRef.current) return;
+      const nearBottom =
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - 60;
+      if (nearBottom) {
+        advancePage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [advancePage]);
 
   return (
     <motion.div
-      className="min-h-screen md:min-h-[300vh] relative"
+      className="min-h-[200vh] md:min-h-[220vh] relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -100 }}
@@ -175,17 +197,39 @@ const MemoryLane = ({ onNext }) => {
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          className="mt-12 text-rose-gold-light text-center"
-          style={{ y: isMobile ? 0 : y1 }}
-        >
-          <p className="text-lg opacity-70">Cards ke baad niche scroll karein to continue.</p>
-          <p className="text-sm opacity-60 mt-2">Scroll down to go to the next page.</p>
-        </motion.div>
       </div>
 
-      <div ref={endRef} className="h-1 w-full" aria-hidden="true" />
+      <div className="relative flex flex-col items-center justify-start md:justify-center pt-8 md:pt-20 pb-16 text-center">
+        <motion.div
+          className="text-rose-gold-light"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <p className="text-lg opacity-80">Cards ke baad niche scroll karein to continue.</p>
+          <p className="text-sm opacity-60 mt-2">Scroll down to go to the next page.</p>
+          <motion.div
+            className="mt-3 text-2xl"
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity }}
+          >
+            ↓
+          </motion.div>
+        </motion.div>
+        <motion.button
+          type="button"
+          onClick={advancePage}
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-rose-gold px-6 py-3 text-white text-base font-medium shadow-lg shadow-rose-gold/30 hover:bg-rose-gold-light focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          Next page
+        </motion.button>
+        <div ref={endRef} className="mt-10 h-24 w-full" aria-hidden="true" />
+      </div>
     </motion.div>
   );
 };
