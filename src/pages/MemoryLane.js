@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const MemoryLane = ({ onNext }) => {
   const { scrollYProgress } = useScroll();
   const [flippedCards, setFlippedCards] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
+  const endRef = useRef(null);
 
   const memories = [
     {
@@ -40,28 +42,43 @@ const MemoryLane = ({ onNext }) => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > window.innerHeight * 2) {
-        onNext();
-      }
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!endRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          onNext();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(endRef.current);
+    return () => observer.disconnect();
   }, [onNext]);
 
   return (
     <motion.div
-      className="min-h-[300vh] relative"
+      className="min-h-screen md:min-h-[300vh] relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative md:sticky md:top-0 md:h-screen flex flex-col items-center justify-center py-12 md:py-0 md:overflow-hidden">
         <motion.h2
           className="text-4xl md:text-6xl font-signature text-rose-gold mb-12 text-center"
-          style={{ y: y1 }}
+          style={{ y: isMobile ? 0 : y1 }}
         >
           Our Beautiful Journey
         </motion.h2>
@@ -70,40 +87,41 @@ const MemoryLane = ({ onNext }) => {
           {memories.map((memory, index) => (
             <motion.div
               key={memory.id}
-              className="relative w-72 h-96 mx-auto perspective-1000"
+              className="relative w-72 h-96 mx-auto"
               style={{ 
-                y: index % 2 === 0 ? y2 : y3,
+                y: isMobile ? 0 : (index % 2 === 0 ? y2 : y3),
+                perspective: '1200px'
               }}
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2, duration: 0.8 }}
             >
-              <motion.div
-                className="relative w-full h-full cursor-pointer"
+              <motion.button
+                type="button"
+                className="group relative w-full h-full rounded-2xl bg-transparent border-0 p-0 text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100"
                 onClick={() => toggleFlip(memory.id)}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -8, scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                aria-pressed={!!flippedCards[memory.id]}
+                aria-label={`Toggle memory ${memory.id}`}
               >
-                {/* Card container with mobile-friendly animation */}
                 <motion.div
-                  className="relative w-full h-full rounded-lg overflow-hidden shadow-2xl"
-                  animate={{
-                    rotateY: flippedCards[memory.id] ? 180 : 0,
-                    scale: flippedCards[memory.id] ? 0.95 : 1
-                  }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className="relative w-full h-full rounded-2xl shadow-2xl transition-shadow duration-300 group-hover:shadow-[0_25px_50px_rgba(232,180,184,0.45)]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                  animate={{ rotateY: flippedCards[memory.id] ? 180 : 0 }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
                 >
                   {/* Front of card */}
-                  <motion.div
-                    className="absolute inset-0"
-                    animate={{ opacity: flippedCards[memory.id] ? 0 : 1 }}
-                    transition={{ duration: 0.3 }}
+                  <div
+                    className="absolute inset-0 rounded-2xl overflow-hidden"
+                    style={{ backfaceVisibility: 'hidden' }}
                   >
                     <img
                       src={memory.image}
                       alt={`Memory ${memory.id}`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
                     
                     {/* Mobile tap indicator */}
                     <motion.div
@@ -118,15 +136,14 @@ const MemoryLane = ({ onNext }) => {
                     </motion.div>
                     
                     <div className="absolute bottom-4 left-4 right-4 text-center">
-                      <p className="text-white text-sm opacity-80">Tap to reveal memory ✨</p>
+                      <p className="text-white text-base opacity-90">Tap to reveal memory ✨</p>
                     </div>
-                  </motion.div>
+                  </div>
 
                   {/* Back of card */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-rose-gold to-rose-gold-light rounded-lg p-6 flex items-center justify-center"
-                    animate={{ opacity: flippedCards[memory.id] ? 1 : 0 }}
-                    transition={{ duration: 0.3, delay: flippedCards[memory.id] ? 0.3 : 0 }}
+                  <div
+                    className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-br from-rose-gold to-rose-gold-light p-6 flex items-center justify-center"
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                   >
                     <div className="text-center">
                       <motion.div
@@ -139,31 +156,36 @@ const MemoryLane = ({ onNext }) => {
                       >
                         💕
                       </motion.div>
-                      <p className="text-charcoal text-lg font-medium font-signature leading-relaxed">
+                      <p className="text-charcoal text-xl md:text-2xl font-medium font-signature leading-snug">
                         "{memory.note}"
                       </p>
                       <motion.div
-                        className="mt-4 text-charcoal/70 text-sm"
+                        className="mt-4 text-charcoal/70 text-base"
                         animate={{ opacity: [0.5, 1, 0.5] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       >
                         Tap again to flip back ↩️
                       </motion.div>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
-              </motion.div>
+
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-white/0 group-hover:ring-white/60 transition" />
+              </motion.button>
             </motion.div>
           ))}
         </div>
 
         <motion.div
           className="mt-12 text-rose-gold-light text-center"
-          style={{ y: y1 }}
+          style={{ y: isMobile ? 0 : y1 }}
         >
-          <p className="text-lg opacity-70">Scroll to continue our story...</p>
+          <p className="text-lg opacity-70">Cards ke baad niche scroll karein to continue.</p>
+          <p className="text-sm opacity-60 mt-2">Scroll down to go to the next page.</p>
         </motion.div>
       </div>
+
+      <div ref={endRef} className="h-1 w-full" aria-hidden="true" />
     </motion.div>
   );
 };

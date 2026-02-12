@@ -6,7 +6,7 @@ const VintageCertificate = ({ userName, onClose, onDownload }) => {
   const [confetti, setConfetti] = useState([]);
   const [particles, setParticles] = useState([]);
   const displayName = userName || 'My Beloved';
-  const signerName = 'Your Love';
+  const signerName = 'Abhinav';
   const signerTitle = 'Your Forever Person';
   const signerSignature = 'Forever Yours';
   const signerNote = 'With all my heart';

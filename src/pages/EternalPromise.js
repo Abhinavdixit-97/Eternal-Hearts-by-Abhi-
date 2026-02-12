@@ -9,6 +9,29 @@ const EternalPromise = ({ userName }) => {
   const [confetti, setConfetti] = useState([]);
   const [showVintageCertificate, setShowVintageCertificate] = useState(false);
   const certificateRef = useRef(null);
+  const displayName = userName || 'My Beloved';
+  const signerName = 'Abhinav';
+  const signerTagline = 'With all my heart';
+
+  const getSafeFileNamePart = (name) => {
+    const normalized = (name || 'Valentine').toString().trim();
+    const cleaned = normalized.replace(/[^a-z0-9_-]+/gi, '_');
+    return cleaned || 'Valentine';
+  };
+
+  const triggerCanvasDownload = (canvas, fileName) => {
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  };
 
   const downloadVintageCertificate = () => {
     const canvas = document.createElement('canvas');
@@ -66,7 +89,7 @@ const EternalPromise = ({ userName }) => {
     // Name
     ctx.fillStyle = '#8B0000';
     ctx.font = 'italic bold 44px serif';
-    ctx.fillText(userName || 'My Beloved Valentine', 600, 470);
+    ctx.fillText(displayName, 600, 470);
     
     // Description
     ctx.fillStyle = '#2F4F4F';
@@ -96,14 +119,12 @@ const EternalPromise = ({ userName }) => {
     ctx.fillText(`Sealed with Love on this ${formattedDate}`, 600, 780);
     
     // Download
-    const link = document.createElement('a');
-    link.download = `Vintage_Love_Certificate_${userName || 'Valentine'}_${currentDate.toISOString().split('T')[0]}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    const dateStamp = currentDate.toISOString().split('T')[0];
+    const timeStamp = currentDate.toTimeString().slice(0, 8).replace(/:/g, '');
+    const safeName = getSafeFileNamePart(userName);
+    const fileName = `Vintage_Love_Certificate_${safeName}_${dateStamp}_${timeStamp}.png`;
+    triggerCanvasDownload(canvas, fileName);
   };
-  const displayName = userName || 'My Beloved';
-  const signerName = 'Your Love';
-  const signerTagline = 'With all my heart';
 
   const downloadCertificate = () => {
     const canvas = document.createElement('canvas');
@@ -239,10 +260,11 @@ const EternalPromise = ({ userName }) => {
     ctx.fillText('♥ ♥ ♥ ♥ ♥ ♥ ♥', 600, 860);
     
     // Download
-    const link = document.createElement('a');
-    link.download = `Eternal_Love_Certificate_${userName || 'Valentine'}_${currentDate.toISOString().split('T')[0]}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    const dateStamp = currentDate.toISOString().split('T')[0];
+    const timeStamp = currentDate.toTimeString().slice(0, 8).replace(/:/g, '');
+    const safeName = getSafeFileNamePart(userName);
+    const fileName = `Eternal_Love_Certificate_${safeName}_${dateStamp}_${timeStamp}.png`;
+    triggerCanvasDownload(canvas, fileName);
   };
 
   const loveLetterText = `My Dearest Love,
@@ -564,7 +586,7 @@ With all my love \u2665
                       }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      {userName}
+                      {displayName}
                     </motion.p>
                     <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed font-serif">
                       is cherished beyond measure, loved without limits, <br className="hidden sm:block"/>
