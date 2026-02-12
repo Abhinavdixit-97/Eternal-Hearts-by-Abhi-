@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Eternal-Hearts-by-Abhi-/static/css/main.40ef4996.css",
-    "main.js": "/Eternal-Hearts-by-Abhi-/static/js/main.7ef37111.js",
+    "main.css": "/Eternal-Hearts-by-Abhi-/static/css/main.9a330d51.css",
+    "main.js": "/Eternal-Hearts-by-Abhi-/static/js/main.1ef5cf6a.js",
     "index.html": "/Eternal-Hearts-by-Abhi-/index.html",
-    "main.40ef4996.css.map": "/Eternal-Hearts-by-Abhi-/static/css/main.40ef4996.css.map",
-    "main.7ef37111.js.map": "/Eternal-Hearts-by-Abhi-/static/js/main.7ef37111.js.map"
+    "main.9a330d51.css.map": "/Eternal-Hearts-by-Abhi-/static/css/main.9a330d51.css.map",
+    "main.1ef5cf6a.js.map": "/Eternal-Hearts-by-Abhi-/static/js/main.1ef5cf6a.js.map"
   },
   "entrypoints": [
-    "static/css/main.40ef4996.css",
-    "static/js/main.7ef37111.js"
+    "static/css/main.9a330d51.css",
+    "static/js/main.1ef5cf6a.js"
   ]
 }
