@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 
 const MemoryLane = ({ onNext }) => {
   const { scrollYProgress } = useScroll();
@@ -57,6 +57,12 @@ const MemoryLane = ({ onNext }) => {
     hasAdvancedRef.current = true;
     onNext();
   }, [onNext]);
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (latest > 0.98) {
+      advancePage();
+    }
+  });
 
   useEffect(() => {
     if (!endRef.current) return;
@@ -220,7 +226,7 @@ const MemoryLane = ({ onNext }) => {
         <motion.button
           type="button"
           onClick={advancePage}
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-rose-gold px-6 py-3 text-white text-base font-medium shadow-lg shadow-rose-gold/30 hover:bg-rose-gold-light focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100"
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-rose-gold px-6 py-3 text-white text-base font-medium shadow-lg shadow-rose-gold/30 hover:bg-rose-gold-light focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100 md:hidden"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -230,6 +236,17 @@ const MemoryLane = ({ onNext }) => {
         </motion.button>
         <div ref={endRef} className="mt-10 h-24 w-full" aria-hidden="true" />
       </div>
+
+      <motion.button
+        type="button"
+        onClick={advancePage}
+        className="hidden md:inline-flex fixed bottom-6 right-6 items-center justify-center rounded-full bg-rose-gold px-5 py-3 text-white text-sm font-medium shadow-lg shadow-rose-gold/30 hover:bg-rose-gold-light focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-rose-100"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        Next page
+      </motion.button>
     </motion.div>
   );
 };
